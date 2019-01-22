@@ -1,5 +1,6 @@
 package vicaire.tommy.moodtracker;
 
+import android.content.Intent;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -40,12 +41,11 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         mGestureDetectorCompat = new GestureDetectorCompat(this , this);
         mMoodBackGround = findViewById(R.id.mood_backGround);
         mMoodImage = findViewById(R.id.mood_img);
         mCommentButton = findViewById(R.id.comment_button);
-
+        mHistoryButton = findViewById(R.id.history_button);
 
         mMoodArrayList.add(new Mood(getResources().getColor(R.color.banana_yellow), R.drawable.smiley_super_happy)) ;
         mMoodArrayList.add(new Mood(getResources().getColor(R.color.light_sage), R.drawable.smiley_happy))      ;
@@ -56,7 +56,17 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
         mMoodBackGround.setBackgroundColor(mMoodArrayList.get(mCurrentIndex).getMoodBackGroundColor());
 
-    mCommentButton.setOnClickListener(new View.OnClickListener() {
+        mHistoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent historyActivity = new Intent(MainActivity.this,HistoryActivity.class);
+                startActivity(historyActivity);
+
+            }
+        });
+
+        mCommentButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 
@@ -66,9 +76,6 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             EditText mEditComment = mView.findViewById(R.id.edit_comment);
             Button mOkButton = mView.findViewById(R.id.ok_button);
             Button mCancelButton = mView.findViewById(R.id.cancel_button);
-
-
-
 
             mBuilder.setView(mView);
             final AlertDialog dialog = mBuilder.create();
