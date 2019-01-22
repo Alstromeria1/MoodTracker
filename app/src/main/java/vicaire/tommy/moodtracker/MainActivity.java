@@ -1,6 +1,7 @@
 package vicaire.tommy.moodtracker;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -25,13 +26,16 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
    private int mCurrentIndex = 1;
    private final int DELTA_MIN = 50;
    private final int MOOD_LENGTH = 4;
+
+   SharedPreferences moodPreferences;
+
    GestureDetectorCompat mGestureDetectorCompat;
 
 
    private final ArrayList<Mood> mMoodArrayList = new ArrayList<>();
 
 
-
+    private static final String PREF_KEY_INDEX = "PREF_KEY_INDEX";
 
 
 
@@ -42,6 +46,17 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         setContentView(R.layout.activity_main);
 
         mGestureDetectorCompat = new GestureDetectorCompat(this , this);
+
+        moodPreferences = getPreferences(MODE_PRIVATE);
+
+
+        if(moodPreferences.contains(PREF_KEY_INDEX)){
+            mCurrentIndex = moodPreferences.getInt(PREF_KEY_INDEX , 0);
+        }else {
+            moodPreferences.edit().putInt(PREF_KEY_INDEX , 1).apply();
+        }
+
+
         mMoodBackGround = findViewById(R.id.mood_backGround);
         mMoodImage = findViewById(R.id.mood_img);
         mCommentButton = findViewById(R.id.comment_button);
@@ -168,6 +183,8 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     private void switchMood(){
         mMoodImage.setImageResource(mMoodArrayList.get(mCurrentIndex).getMoodImage());
         mMoodBackGround.setBackgroundColor(mMoodArrayList.get(mCurrentIndex).getMoodBackGroundColor());
+
+        moodPreferences.edit().putInt(PREF_KEY_INDEX , mCurrentIndex).apply();
 
     }
 }
