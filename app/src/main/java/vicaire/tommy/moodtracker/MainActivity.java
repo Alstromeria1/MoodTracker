@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
         mMoodBackGround = findViewById(R.id.mood_backGround);
         mMoodImage = findViewById(R.id.mood_img);
 
+        mMoodBackGround.setBackgroundColor(getResources().getColor(R.color.light_sage));
+
 
 
 
