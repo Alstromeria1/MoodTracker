@@ -1,13 +1,17 @@
 package vicaire.tommy.moodtracker;
 
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -40,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         mGestureDetectorCompat = new GestureDetectorCompat(this , this);
         mMoodBackGround = findViewById(R.id.mood_backGround);
         mMoodImage = findViewById(R.id.mood_img);
+        mCommentButton = findViewById(R.id.comment_button);
 
 
         mMoodArrayList.add(new Mood(getResources().getColor(R.color.banana_yellow), R.drawable.smiley_super_happy)) ;
@@ -51,7 +56,39 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
         mMoodBackGround.setBackgroundColor(mMoodArrayList.get(mCurrentIndex).getMoodBackGroundColor());
 
+    mCommentButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
 
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+            View mView = getLayoutInflater().inflate(R.layout.dialog_comment , null);
+            TextView mCommentText = mView.findViewById(R.id.text_comment);
+            EditText mEditComment = mView.findViewById(R.id.edit_comment);
+            Button mOkButton = mView.findViewById(R.id.ok_button);
+            Button mCancelButton = mView.findViewById(R.id.cancel_button);
+
+
+
+
+            mBuilder.setView(mView);
+            final AlertDialog dialog = mBuilder.create();
+            dialog.show();
+
+            mOkButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.cancel();
+                }
+            });
+            mCancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.cancel();
+                }
+            });
+
+        }
+    });
 
 
     }
@@ -107,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
                     if (mCurrentIndex <= MOOD_LENGTH && mCurrentIndex > 0) {
                         mCurrentIndex -= 1;
                     }
-                    
+
                     switchMood();
                     return true;
                 }
