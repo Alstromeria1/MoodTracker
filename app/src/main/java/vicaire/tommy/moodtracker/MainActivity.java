@@ -16,8 +16,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
 
@@ -25,6 +33,12 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
    private ImageView mMoodImage;
    private Button mCommentButton;
    private Button mHistoryButton;
+
+
+
+    Gson gson = new Gson();
+
+
    private int mCurrentIndex = 1;
    private final int DELTA_MIN = 50;
    private final int MOOD_LENGTH = 4;
@@ -36,11 +50,21 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
 
    private final ArrayList<Mood> mMoodArrayList = new ArrayList<>();
+    private ArrayList<Mood> savedMoods = new ArrayList<>();
 
 
-    private static final String PREF_KEY_INDEX = "PREF_KEY_INDEX";
+    public static final String PREF_KEY_INDEX = "PREF_KEY_INDEX";
     public static final String  PREF_KEY_COMMENT = "PREF_KEY_COMMENT";
+    public static final String  PREF_KEY_DATE = "PREF_KEY_DATE";
+    public static final String PREF_KEY_SAVED_MOOD = "PREF_KEY_SAVED_MOOD";
+    public static final String LINK = "LINK";
 
+    Date mDate = Calendar.getInstance().getTime();
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    String mCurrentDate = df.format(mDate.getTime());
+    String mDateToCompare;
+
+    public static final int MAXDAY = 7;
 
 
 
@@ -49,16 +73,31 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        // Gson gson = new Gson();
+        // String json = gson.toJson(savedMoods);
+        // moodPreferences.edit().putString(PREF_KEY_SAVED_MOOD , json).apply();
+
+
+
         mGestureDetectorCompat = new GestureDetectorCompat(this , this);
 
-        moodPreferences = getPreferences(MODE_PRIVATE);
+        moodPreferences = getApplicationContext().getSharedPreferences(LINK, MODE_PRIVATE);
+
+         if (moodPreferences.contains(PREF_KEY_DATE)){
+             mDateToCompare = moodPreferences.getString(PREF_KEY_DATE , null);
+         }
+         moodPreferences.edit().putString(PREF_KEY_DATE , mCurrentDate).apply();
 
 
-        if(moodPreferences.contains(PREF_KEY_INDEX)){
+         if(moodPreferences.contains(PREF_KEY_INDEX)){
             mCurrentIndex = moodPreferences.getInt(PREF_KEY_INDEX , 0);
         }else {
             moodPreferences.edit().putInt(PREF_KEY_INDEX , 1).apply();
-        }
+         }
+
+
+
 
 
         mMoodBackGround = findViewById(R.id.mood_backGround);
@@ -79,75 +118,20 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             @Override
             public void onClick(View view) {
 
-                Intent historyActivity = new Intent(MainActivity.this,HistoryActivity.class);
-                startActivity(historyActivity);
+
+              Intent historyActivity = new Intent(MainActivity.this,HistoryActivity.class);
+              startActivity(historyActivity);
 
             }
         });
-
-        mCommentButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-
-           final AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-           final View mView = getLayoutInflater().inflate(R.layout.dialog_comment , null);
-           final TextView mCommentText = mView.findViewById(R.id.text_comment);
-           final EditText mEditComment = mView.findViewById(R.id.edit_comment);
-           final Button mOkButton = mView.findViewById(R.id.ok_button);
-           final Button mCancelButton = mView.findViewById(R.id.cancel_button);
-            mOkButton.setEnabled(false);
-            mEditComment.setHorizontallyScrolling(false);
-           if(moodPreferences.contains(PREF_KEY_COMMENT)){
-               mEditComment.setText(mComment);
-               mEditComment.setSelection(mEditComment.getText().length());
-           }
-
-            mBuilder.setView(mView);
-            final AlertDialog dialog = mBuilder.create();
-            dialog.show();
-            mEditComment.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    mOkButton.setEnabled(mEditComment.getText().length() != 0);
-                   // mOkButton.setEnabled(s.toString().length() != 0);
-                   // mOkButton.setVisibility(s.toString().length() != 0 ? View.VISIBLE : View.INVISIBLE);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
+        processCommentClick();
 
 
-            mOkButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mComment = mEditComment.getText().toString();
-                    moodPreferences.edit().putString(PREF_KEY_COMMENT , mComment).apply();
-                    dialog.cancel();
-                }
-            });
-            mCancelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(mEditComment.getText().length() < 1){
-                        mComment = null;
-                    }
-                    dialog.cancel();
-                }
-            });
-
-        }
-    });
 
 
     }
+
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -219,6 +203,79 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         mMoodBackGround.setBackgroundColor(mMoodArrayList.get(mCurrentIndex).getMoodBackGroundColor());
 
         moodPreferences.edit().putInt(PREF_KEY_INDEX , mCurrentIndex).apply();
+
+
+        if(savedMoods.size() >= MAXDAY) {
+            savedMoods.remove(savedMoods.size() - 1);
+        }
+
+        savedMoods.add(0 , mMoodArrayList.get(mCurrentIndex));
+
+        // Gson gson = new Gson();
+        String json = gson.toJson(savedMoods);
+        moodPreferences.edit().putString(PREF_KEY_SAVED_MOOD , json).apply();
+
+    }
+    private void processCommentClick(){
+        mCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+                final View mView = getLayoutInflater().inflate(R.layout.dialog_comment , null);
+                final TextView mCommentText = mView.findViewById(R.id.text_comment);
+                final EditText mEditComment = mView.findViewById(R.id.edit_comment);
+                final Button mOkButton = mView.findViewById(R.id.ok_button);
+                final Button mCancelButton = mView.findViewById(R.id.cancel_button);
+                mOkButton.setEnabled(false);
+                mEditComment.setHorizontallyScrolling(false);
+                if(moodPreferences.contains(PREF_KEY_COMMENT)){
+                    mEditComment.setText(mComment);
+                    mEditComment.setSelection(mEditComment.getText().length());
+                }
+
+                mBuilder.setView(mView);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
+                mEditComment.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        mOkButton.setEnabled(mEditComment.getText().length() != 0);
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+
+
+                mOkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mComment = mEditComment.getText().toString();
+                        moodPreferences.edit().putString(PREF_KEY_COMMENT , mComment).apply();
+                        dialog.cancel();
+                    }
+                });
+                mCancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(mEditComment.getText().length() < 1){
+                            mComment = null;
+                        }
+                        dialog.cancel();
+                    }
+                });
+
+            }
+        });
 
     }
 }
