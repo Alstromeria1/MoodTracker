@@ -27,6 +27,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import static vicaire.tommy.moodtracker.Mood.LayoutColor.BLUE;
+import static vicaire.tommy.moodtracker.Mood.LayoutColor.GREEN;
+import static vicaire.tommy.moodtracker.Mood.LayoutColor.GREY;
+import static vicaire.tommy.moodtracker.Mood.LayoutColor.RED;
+import static vicaire.tommy.moodtracker.Mood.LayoutColor.YELLOW;
+
 public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
 
    private RelativeLayout mMoodBackGround;
@@ -74,9 +80,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         setContentView(R.layout.activity_main);
 
 
-        // Gson gson = new Gson();
-        // String json = gson.toJson(savedMoods);
-        // moodPreferences.edit().putString(PREF_KEY_SAVED_MOOD , json).apply();
+
 
 
 
@@ -105,11 +109,11 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         mCommentButton = findViewById(R.id.comment_button);
         mHistoryButton = findViewById(R.id.history_button);
 
-        mMoodArrayList.add(new Mood(getResources().getColor(R.color.banana_yellow), R.drawable.smiley_super_happy)) ;
-        mMoodArrayList.add(new Mood(getResources().getColor(R.color.light_sage), R.drawable.smiley_happy))      ;
-        mMoodArrayList.add(new Mood(getResources().getColor(R.color.cornflower_blue_65), R.drawable.smiley_normal)) ;
-        mMoodArrayList.add(new Mood(getResources().getColor(R.color.warm_grey), R.drawable.smiley_disappointed))    ;
-        mMoodArrayList.add(new Mood(getResources().getColor(R.color.faded_red), R.drawable.smiley_sad))  ;
+        mMoodArrayList.add(new Mood(getResources().getColor(R.color.banana_yellow), R.drawable.smiley_super_happy , YELLOW));
+        mMoodArrayList.add(new Mood(getResources().getColor(R.color.light_sage), R.drawable.smiley_happy , GREEN));
+        mMoodArrayList.add(new Mood(getResources().getColor(R.color.cornflower_blue_65), R.drawable.smiley_normal , BLUE));
+        mMoodArrayList.add(new Mood(getResources().getColor(R.color.warm_grey), R.drawable.smiley_disappointed , GREY));
+        mMoodArrayList.add(new Mood(getResources().getColor(R.color.faded_red), R.drawable.smiley_sad , RED));
 
 
         mMoodBackGround.setBackgroundColor(mMoodArrayList.get(mCurrentIndex).getMoodBackGroundColor());

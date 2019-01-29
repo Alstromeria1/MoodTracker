@@ -3,6 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#ff00796b</color>
+    <color name="white">#FFFFFF</color>
+    <color name="silver">#C0C0C0</color>
 
     <!-- Background colors used for the different moods -->
     <color name="faded_red">#ffde3c50</color>

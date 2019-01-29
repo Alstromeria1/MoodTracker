@@ -7,26 +7,22 @@
     android:id="@+id/parentLinearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_sage"
+    android:background="@color/silver"
     android:orientation="vertical"
     tools:context="HistoryActivity">
 
 
     <TextView
         android:id="@+id/empty_history"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
+        android:background="@color/light_sage"
         android:text="Aucun historique"
         android:textAlignment="center"
         android:textSize="40dp" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ic_note_add_black"
-        android:text="BLABLABLA" />
+
 
 
 </LinearLayout>

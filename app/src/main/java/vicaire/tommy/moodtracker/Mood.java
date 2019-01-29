@@ -1,12 +1,23 @@
 package vicaire.tommy.moodtracker;
 
 public class Mood {
+
+
+    private final LayoutColor layoutWidth;
+
     int moodBackGroundColor;
     int moodImage;
+    public enum LayoutColor {YELLOW , BLUE , RED , GREEN , GREY}
 
-    public Mood(int moodBackGroundColor, int moodImage) {
+
+    public LayoutColor getLayoutColor() {
+        return layoutWidth;
+    }
+
+    public Mood(int moodBackGroundColor, int moodImage , LayoutColor layoutWidth) {
         this.moodBackGroundColor = moodBackGroundColor;
         this.moodImage = moodImage;
+        this.layoutWidth = layoutWidth;
     }
 
     public int getMoodBackGroundColor() {
