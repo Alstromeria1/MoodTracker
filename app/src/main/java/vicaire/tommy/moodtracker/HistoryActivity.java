@@ -59,7 +59,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         // Viewport width and height
         int width = Resources.getSystem().getDisplayMetrics().widthPixels;
-        int height = Resources.getSystem().getDisplayMetrics().heightPixels / MAXDAY;
+        int height = Resources.getSystem().getDisplayMetrics().heightPixels / MAXDAY - 8;
 
         // Yellow mood's width and height
         int yellowWidth = width;
@@ -88,6 +88,9 @@ public class HistoryActivity extends AppCompatActivity {
             View mView = getLayoutInflater().inflate(R.layout.history_item , null);
             TextView textView = mView.findViewById(R.id.days_text);
             textView.setText(String.valueOf(i));
+            String mtext = "Hier";
+            String mtext2 = "Avant-Hier";
+            String mtext3 ="Il y a " + (String.valueOf((i + 1))) + " jours";
 
 
      mView.setBackgroundColor(savedMood.get(i).getMoodBackGroundColor());
@@ -109,6 +112,13 @@ public class HistoryActivity extends AppCompatActivity {
              break;
 
      }
+            if(i == 0){
+                textView.setText(mtext);
+            }else if (i == 1){
+                textView.setText(mtext2);
+            }else {
+                textView.setText(mtext3);
+            }
             ImageView commentImg = mView.findViewById(R.id.comment_img);
             if(savedMood.get(i).getMoodComment() != null){
                 final int position = i;
