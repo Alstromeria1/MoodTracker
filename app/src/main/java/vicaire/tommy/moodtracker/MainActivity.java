@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -67,10 +66,13 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     public static final String PREF_KEY_SAVED_MOOD = "PREF_KEY_SAVED_MOOD";
     public static final String LINK = "LINK";
 
-    Date mDate = Calendar.getInstance().getTime();
-    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    String mCurrentDate = df.format(mDate.getTime());
-    String mDateToCompare;
+    Calendar mCalendar = Calendar.getInstance();
+    SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+
+
+
+    String mCurrentDate = mSimpleDateFormat.format(mCalendar.getTime());
+    String mDateSaved;
 
     public static final int MAXDAY = 7;
 
@@ -90,10 +92,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
         moodPreferences = getApplicationContext().getSharedPreferences(LINK, MODE_PRIVATE);
 
-         if (moodPreferences.contains(PREF_KEY_DATE)){
-             mDateToCompare = moodPreferences.getString(PREF_KEY_DATE , null);
-         }
-         moodPreferences.edit().putString(PREF_KEY_DATE , mCurrentDate).apply();
+
 
 
          if(moodPreferences.contains(PREF_KEY_INDEX)){
@@ -140,8 +139,17 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         });
         processCommentClick();
 
+        if (moodPreferences.contains(PREF_KEY_DATE)) {
+            System.out.println("true");
+            mDateSaved = moodPreferences.getString(PREF_KEY_DATE, null);
+        } else {
+            System.out.println("false");
+            moodPreferences.edit().putString(PREF_KEY_DATE, mCurrentDate).apply();
+            mDateSaved = mCurrentDate;
+        }
 
-
+        System.out.println(mCurrentDate);
+        System.out.println(mDateSaved);
 
     }
 
@@ -226,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
 
         savedMoods.add( 0 , mMoodArrayList.get(mCurrentIndex));
-        savedMoods.get(mCurrentIndex).setMoodComment(mComment);
+        savedMoods.get(0).setMoodComment(mComment);
 
 
         String json = gson.toJson(savedMoods);
