@@ -1,20 +1,18 @@
 package vicaire.tommy.moodtracker;
 
+
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ShareActionProvider;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,47 +81,50 @@ public class HistoryActivity extends AppCompatActivity {
         LinearLayout.LayoutParams redLayoutParam = new LinearLayout.LayoutParams(redWidth, height);
 
 
-        for(int i = 0 ; i < savedMood.size() ; i++){
 
-            System.out.println(savedMood.size());
+        for(int i = savedMood.size() -1 ; i >= 0 ; i--){
+
+
             View mView = getLayoutInflater().inflate(R.layout.history_item , null);
             TextView textView = mView.findViewById(R.id.days_text);
             textView.setText(String.valueOf(i));
 
-         mView.setBackgroundColor(savedMood.get(i).getMoodBackGroundColor());
-         switch (savedMood.get(i).getLayoutColor()) {
-             case YELLOW:
-                 mView.setLayoutParams(yellowLayoutParam);
-                 break;
-             case GREEN:
-                 mView.setLayoutParams(greenLayoutParam);
-                 break;
-             case BLUE:
-                 mView.setLayoutParams(blueLayoutParam);
-                 break;
-             case GREY:
-                 mView.setLayoutParams(greyLayoutParam);
-                 break;
-             case RED:
-                 mView.setLayoutParams(redLayoutParam);
-                 break;
 
-         }
-            parentLL.addView(mView);
+     mView.setBackgroundColor(savedMood.get(i).getMoodBackGroundColor());
+     switch (savedMood.get(i).getLayoutColor()) {
+         case YELLOW:
+             mView.setLayoutParams(yellowLayoutParam);
+             break;
+         case GREEN:
+             mView.setLayoutParams(greenLayoutParam);
+             break;
+         case BLUE:
+             mView.setLayoutParams(blueLayoutParam);
+             break;
+         case GREY:
+             mView.setLayoutParams(greyLayoutParam);
+             break;
+         case RED:
+             mView.setLayoutParams(redLayoutParam);
+             break;
 
+     }
+            ImageView commentImg = mView.findViewById(R.id.comment_img);
+            if(savedMood.get(i).getMoodComment() != null){
+                final int position = i;
+                commentImg.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getBaseContext(), String.valueOf(savedMood.get(position).getMoodComment()), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                commentImg.setVisibility(View.VISIBLE);
 
+            }
 
-
-
-
+        parentLL.addView(mView);
 
         }
-
-
-
-
-
-
 
     }
 }

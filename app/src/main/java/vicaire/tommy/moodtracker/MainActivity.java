@@ -21,11 +21,13 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import static vicaire.tommy.moodtracker.Mood.LayoutColor.BLUE;
 import static vicaire.tommy.moodtracker.Mood.LayoutColor.GREEN;
@@ -100,7 +102,14 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             moodPreferences.edit().putInt(PREF_KEY_INDEX , 1).apply();
          }
 
+        if (moodPreferences.contains(PREF_KEY_SAVED_MOOD )){
 
+            Gson gson = new Gson();
+            String json = moodPreferences.getString(PREF_KEY_SAVED_MOOD , null);
+            Type type = new TypeToken<List<Mood>>(){}.getType();
+
+            savedMoods = gson.fromJson(json , type);
+        }
 
 
 
@@ -117,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
 
         mMoodBackGround.setBackgroundColor(mMoodArrayList.get(mCurrentIndex).getMoodBackGroundColor());
+        mMoodImage.setImageResource(mMoodArrayList.get(mCurrentIndex).getMoodImage());
 
         mHistoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,9 +223,12 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             savedMoods.remove(savedMoods.size() - 1);
         }
 
-        savedMoods.add(0 , mMoodArrayList.get(mCurrentIndex));
 
-        // Gson gson = new Gson();
+
+        savedMoods.add( 0 , mMoodArrayList.get(mCurrentIndex));
+        savedMoods.get(mCurrentIndex).setMoodComment(mComment);
+
+
         String json = gson.toJson(savedMoods);
         moodPreferences.edit().putString(PREF_KEY_SAVED_MOOD , json).apply();
 

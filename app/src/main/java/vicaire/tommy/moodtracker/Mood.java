@@ -4,7 +4,7 @@ public class Mood {
 
 
     private final LayoutColor layoutWidth;
-
+    String moodComment;
     int moodBackGroundColor;
     int moodImage;
     public enum LayoutColor {YELLOW , BLUE , RED , GREEN , GREY}
@@ -18,6 +18,14 @@ public class Mood {
         this.moodBackGroundColor = moodBackGroundColor;
         this.moodImage = moodImage;
         this.layoutWidth = layoutWidth;
+    }
+
+    public String getMoodComment() {
+        return moodComment;
+    }
+
+    public void setMoodComment(String moodComment) {
+        this.moodComment = moodComment;
     }
 
     public int getMoodBackGroundColor() {
