@@ -1,5 +1,8 @@
 package vicaire.tommy.moodtracker;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.view.GestureDetectorCompat;
@@ -21,11 +24,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static vicaire.tommy.moodtracker.Mood.LayoutColor.BLUE;
@@ -41,9 +42,10 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
    private Button mCommentButton;
    private Button mHistoryButton;
 
+    private AlarmManager alarmManager;
+    private PendingIntent alarmIntent;
 
 
-    Gson gson = new Gson();
 
 
    private int mCurrentIndex = 1;
@@ -51,14 +53,15 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
    private final int MOOD_LENGTH = 4;
    String mComment;
 
-   SharedPreferences moodPreferences;
+
 
    GestureDetectorCompat mGestureDetectorCompat;
 
 
-   private final ArrayList<Mood> mMoodArrayList = new ArrayList<>();
+   public static final ArrayList<Mood> mMoodArrayList = new ArrayList<>();
     private ArrayList<Mood> savedMoods = new ArrayList<>();
 
+    SharedPreferences  moodPreferences;
 
     public static final String PREF_KEY_INDEX = "PREF_KEY_INDEX";
     public static final String  PREF_KEY_COMMENT = "PREF_KEY_COMMENT";
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     String mCurrentDate = mSimpleDateFormat.format(mCalendar.getTime());
     String mDateSaved;
 
-    public static final int MAXDAY = 7;
+    public static final int MAX_DAY = 7;
 
 
 
@@ -84,7 +87,18 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         setContentView(R.layout.activity_main);
 
 
+        alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent newIntent = new Intent(this , AlarmReceiver.class);
+        alarmIntent = PendingIntent.getBroadcast(this , 0 , newIntent , 0);
 
+        Calendar calendar =Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 14);
+        calendar.set(Calendar.MINUTE ,40);
+        calendar.set(Calendar.SECOND , 00);
+        calendar.set(Calendar.MILLISECOND , 00);
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
 
 
 
@@ -100,6 +114,13 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         }else {
             moodPreferences.edit().putInt(PREF_KEY_INDEX , 1).apply();
          }
+
+        if (moodPreferences.contains(PREF_KEY_COMMENT)) {
+            mComment = moodPreferences.getString(PREF_KEY_COMMENT, null);
+        }else {
+            moodPreferences.edit().putString(PREF_KEY_COMMENT , mComment).apply();
+        }
+
 
         if (moodPreferences.contains(PREF_KEY_SAVED_MOOD )){
 
@@ -124,8 +145,8 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         mMoodArrayList.add(new Mood(getResources().getColor(R.color.faded_red), R.drawable.smiley_sad , RED));
 
 
-        mMoodBackGround.setBackgroundColor(mMoodArrayList.get(mCurrentIndex).getMoodBackGroundColor());
-        mMoodImage.setImageResource(mMoodArrayList.get(mCurrentIndex).getMoodImage());
+
+
 
         mHistoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,16 +161,18 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         processCommentClick();
 
         if (moodPreferences.contains(PREF_KEY_DATE)) {
-            System.out.println("true");
+
             mDateSaved = moodPreferences.getString(PREF_KEY_DATE, null);
         } else {
-            System.out.println("false");
+
             moodPreferences.edit().putString(PREF_KEY_DATE, mCurrentDate).apply();
             mDateSaved = mCurrentDate;
         }
 
-        System.out.println(mCurrentDate);
-        System.out.println(mDateSaved);
+       // sendMoodToHistory();
+
+        mMoodBackGround.setBackgroundColor(mMoodArrayList.get(mCurrentIndex).getMoodBackGroundColor());
+        mMoodImage.setImageResource(mMoodArrayList.get(mCurrentIndex).getMoodImage());
 
     }
 
@@ -220,6 +243,34 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
     }
 
+
+
+    public void sendMoodToHistory(Context context) {
+        if (mDateSaved.equals(mCurrentDate)) {
+            // If there is more than 7 days , it removes the last index to avoid the out of bounds
+            if (savedMoods.size() >= MAX_DAY) {
+                savedMoods.remove(savedMoods.size() - 1);
+            }
+            savedMoods.add(0, mMoodArrayList.get(mCurrentIndex));
+            savedMoods.get(0).setMoodComment(mComment);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(savedMoods);
+            SharedPreferences.Editor editor = moodPreferences.edit();
+
+            editor.putString(PREF_KEY_COMMENT, null);
+            editor.putString(PREF_KEY_DATE, mCurrentDate);
+            editor.remove(PREF_KEY_INDEX);
+
+            editor.apply();
+
+            moodPreferences.edit().putString(PREF_KEY_SAVED_MOOD, json).apply();
+
+
+            mCurrentIndex = 1;
+        }
+    }
+
     private void switchMood(){
         mMoodImage.setImageResource(mMoodArrayList.get(mCurrentIndex).getMoodImage());
         mMoodBackGround.setBackgroundColor(mMoodArrayList.get(mCurrentIndex).getMoodBackGroundColor());
@@ -227,18 +278,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         moodPreferences.edit().putInt(PREF_KEY_INDEX , mCurrentIndex).apply();
 
 
-        if(savedMoods.size() >= MAXDAY) {
-            savedMoods.remove(savedMoods.size() - 1);
-        }
 
-
-
-        savedMoods.add( 0 , mMoodArrayList.get(mCurrentIndex));
-        savedMoods.get(0).setMoodComment(mComment);
-
-
-        String json = gson.toJson(savedMoods);
-        moodPreferences.edit().putString(PREF_KEY_SAVED_MOOD , json).apply();
 
     }
     private void processCommentClick(){

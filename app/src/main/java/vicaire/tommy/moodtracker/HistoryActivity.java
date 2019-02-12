@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static vicaire.tommy.moodtracker.MainActivity.LINK;
-import static vicaire.tommy.moodtracker.MainActivity.MAXDAY;
+import static vicaire.tommy.moodtracker.MainActivity.MAX_DAY;
 import static vicaire.tommy.moodtracker.MainActivity.PREF_KEY_SAVED_MOOD;
 
 public class HistoryActivity extends AppCompatActivity {
@@ -27,6 +27,7 @@ public class HistoryActivity extends AppCompatActivity {
     SharedPreferences moodPreferences;
     TextView emptyHistory;
     LinearLayout parentLL;
+
 
 
     @Override
@@ -59,7 +60,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         // Viewport width and height
         int width = Resources.getSystem().getDisplayMetrics().widthPixels;
-        int height = Resources.getSystem().getDisplayMetrics().heightPixels / MAXDAY - 8;
+        int height = Resources.getSystem().getDisplayMetrics().heightPixels / MAX_DAY - 8;
 
         // Yellow mood's width and height
         int yellowWidth = width;
