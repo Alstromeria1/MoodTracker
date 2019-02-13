@@ -1,4 +1,4 @@
-package vicaire.tommy.moodtracker;
+package vicaire.tommy.moodtracker.Controler;
 
 
 import android.content.SharedPreferences;
@@ -17,11 +17,15 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import static vicaire.tommy.moodtracker.MainActivity.LINK;
-import static vicaire.tommy.moodtracker.MainActivity.MAX_DAY;
-import static vicaire.tommy.moodtracker.MainActivity.PREF_KEY_SAVED_MOOD;
+import vicaire.tommy.moodtracker.Model.Mood;
+import vicaire.tommy.moodtracker.R;
+
+import static vicaire.tommy.moodtracker.Controler.MainActivity.LINK;
+import static vicaire.tommy.moodtracker.Controler.MainActivity.MAX_DAY;
+import static vicaire.tommy.moodtracker.Controler.MainActivity.PREF_KEY_SAVED_MOOD;
 
 public class HistoryActivity extends AppCompatActivity {
+
 
     ArrayList<Mood> savedMood = new ArrayList<>();
     SharedPreferences moodPreferences;
@@ -36,27 +40,17 @@ public class HistoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_history);
 
 
-
         emptyHistory = findViewById(R.id.empty_history);
         parentLL = findViewById(R.id.parentLinearLayout);
 
-
-
+        // SharedPreference
         moodPreferences = getApplicationContext().getSharedPreferences(LINK , MODE_PRIVATE);
 
-        if (moodPreferences.contains(PREF_KEY_SAVED_MOOD )){
 
-            Gson gson = new Gson();
-            String json = moodPreferences.getString(PREF_KEY_SAVED_MOOD , null);
-            Type type = new TypeToken<List<Mood>>(){}.getType();
-
-            savedMood = gson.fromJson(json , type);
-        }
-
+        // recover moods from the SharedPreferences
+        recoverMood();
         // if SavedMood contains a mood the layout will disappear letting place to the history
-        if (savedMood.size() > 0) {
-            emptyHistory.setVisibility(View.GONE);
-        }
+        showEmpty();
 
         // Viewport width and height
         int width = Resources.getSystem().getDisplayMetrics().widthPixels;
@@ -73,7 +67,6 @@ public class HistoryActivity extends AppCompatActivity {
         // Red mood's width and height
         int redWidth = (int) (width / 3.3);
 
-
         // These parameters will describe each width depending on the mood
         LinearLayout.LayoutParams yellowLayoutParam = new LinearLayout.LayoutParams(yellowWidth, height);
         LinearLayout.LayoutParams greenLayoutParam = new LinearLayout.LayoutParams(greenWidth, height);
@@ -81,17 +74,16 @@ public class HistoryActivity extends AppCompatActivity {
         LinearLayout.LayoutParams greyLayoutParam = new LinearLayout.LayoutParams(greyWidth, height);
         LinearLayout.LayoutParams redLayoutParam = new LinearLayout.LayoutParams(redWidth, height);
 
-
-
+        // this loop will inflate a view and choose its parameter for each mood contained in savedMood
         for(int i = savedMood.size() -1 ; i >= 0 ; i--){
 
 
             View mView = getLayoutInflater().inflate(R.layout.history_item , null);
             TextView textView = mView.findViewById(R.id.days_text);
             textView.setText(String.valueOf(i));
-            String mtext = "Hier";
-            String mtext2 = "Avant-Hier";
-            String mtext3 ="Il y a " + (String.valueOf((i + 1))) + " jours";
+            String yesterday = "Hier";
+            String twoDaysAgo = "Avant-Hier";
+            String xDaysago ="Il y a " + (String.valueOf((i + 1))) + " jours";
 
 
      mView.setBackgroundColor(savedMood.get(i).getMoodBackGroundColor());
@@ -114,12 +106,14 @@ public class HistoryActivity extends AppCompatActivity {
 
      }
             if(i == 0){
-                textView.setText(mtext);
+                textView.setText(yesterday);
             }else if (i == 1){
-                textView.setText(mtext2);
+                textView.setText(twoDaysAgo);
             }else {
-                textView.setText(mtext3);
+                textView.setText(xDaysago);
             }
+
+
             ImageView commentImg = mView.findViewById(R.id.comment_img);
             if(savedMood.get(i).getMoodComment() != null){
                 final int position = i;
@@ -135,6 +129,27 @@ public class HistoryActivity extends AppCompatActivity {
 
         parentLL.addView(mView);
 
+        }
+
+    }
+    // Recover moods from the SharedPreferences
+    private void recoverMood(){
+
+        if (moodPreferences.contains(PREF_KEY_SAVED_MOOD )){
+
+            Gson gson = new Gson();
+            String json = moodPreferences.getString(PREF_KEY_SAVED_MOOD , null);
+            Type type = new TypeToken<List<Mood>>(){}.getType();
+
+            savedMood = gson.fromJson(json , type);
+        }
+
+    }
+    // if SavedMood contains a mood the layout will disappear letting place to the history
+    private void showEmpty(){
+
+        if (savedMood.size() > 0) {
+            emptyHistory.setVisibility(View.GONE);
         }
 
     }

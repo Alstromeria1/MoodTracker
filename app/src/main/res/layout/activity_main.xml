@@ -5,7 +5,7 @@
     android:id="@+id/mood_backGround"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Controler.MainActivity">
 
    <ImageView
        android:id="@+id/mood_img"

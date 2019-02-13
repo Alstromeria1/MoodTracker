@@ -1,12 +1,12 @@
-package vicaire.tommy.moodtracker;
+package vicaire.tommy.moodtracker.Model;
 
 public class Mood {
 
 
     private final LayoutColor layoutWidth;
-    String moodComment;
-    int moodBackGroundColor;
-    int moodImage;
+    private String moodComment;
+    private int moodBackGroundColor;
+    private int moodImage;
     public enum LayoutColor {YELLOW , BLUE , RED , GREEN , GREY}
 
 
