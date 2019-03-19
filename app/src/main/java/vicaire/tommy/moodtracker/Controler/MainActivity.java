@@ -2,6 +2,7 @@ package vicaire.tommy.moodtracker.Controler;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -93,11 +94,11 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         mCommentButton = findViewById(R.id.comment_button);
         mHistoryButton = findViewById(R.id.history_button);
             // Filling mMoodArrayList with mood objects
-        mMoodArrayList.add(new Mood(getResources().getColor(R.color.banana_yellow), R.drawable.smiley_super_happy , YELLOW));
-        mMoodArrayList.add(new Mood(getResources().getColor(R.color.light_sage), R.drawable.smiley_happy , GREEN));
-        mMoodArrayList.add(new Mood(getResources().getColor(R.color.cornflower_blue_65), R.drawable.smiley_normal , BLUE));
-        mMoodArrayList.add(new Mood(getResources().getColor(R.color.warm_grey), R.drawable.smiley_disappointed , GREY));
-        mMoodArrayList.add(new Mood(getResources().getColor(R.color.faded_red), R.drawable.smiley_sad , RED));
+        mMoodArrayList.add(new Mood(getResources().getColor(R.color.banana_yellow), R.drawable.smiley_super_happy , YELLOW ,R.raw.verygoodmood));
+        mMoodArrayList.add(new Mood(getResources().getColor(R.color.light_sage), R.drawable.smiley_happy , GREEN,R.raw.goodmood));
+        mMoodArrayList.add(new Mood(getResources().getColor(R.color.cornflower_blue_65), R.drawable.smiley_normal , BLUE,R.raw.normalmood));
+        mMoodArrayList.add(new Mood(getResources().getColor(R.color.warm_grey), R.drawable.smiley_disappointed , GREY,R.raw.badmood));
+        mMoodArrayList.add(new Mood(getResources().getColor(R.color.faded_red), R.drawable.smiley_sad , RED,R.raw.verybadmood));
             // Called method
         Utils.setAlarm(this);
         processHistoryClick();
@@ -165,6 +166,9 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     private void switchMood(){
         mMoodImage.setImageResource(mMoodArrayList.get(mCurrentIndex).getMoodImage());
         mMoodBackGround.setBackgroundColor(mMoodArrayList.get(mCurrentIndex).getMoodBackGroundColor());
+
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, mMoodArrayList.get(mCurrentIndex).getMoodAudio());
+        mediaPlayer.start();
 
         moodPreferences.edit().putInt(PREF_KEY_INDEX , mCurrentIndex).apply();
     }

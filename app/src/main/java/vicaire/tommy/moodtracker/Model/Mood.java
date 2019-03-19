@@ -7,6 +7,7 @@ public class Mood {
     private String moodComment;
     private int moodBackGroundColor;
     private int moodImage;
+    private int moodAudio;
     public enum LayoutColor {YELLOW , BLUE , RED , GREEN , GREY}
 
 
@@ -14,11 +15,14 @@ public class Mood {
         return layoutWidth;
     }
 
-    public Mood(int moodBackGroundColor, int moodImage , LayoutColor layoutWidth) {
+    public Mood(int moodBackGroundColor, int moodImage , LayoutColor layoutWidth , int moodAudio) {
         this.moodBackGroundColor = moodBackGroundColor;
         this.moodImage = moodImage;
         this.layoutWidth = layoutWidth;
+        this.moodAudio = moodAudio;
     }
+
+    public int getMoodAudio(){ return moodAudio;}
 
     public String getMoodComment() {
         return moodComment;
